@@ -68,6 +68,12 @@ cd deeplearning/datasets
 ./get_assignment2_data.sh
 ```
 
+If you don't have wget installed, you can also try 
+
+```bash
+./get_assignment2_data_curl.sh
+```
+
 
 ### Start Jupyter Notebook
 After you download data, you should start the IPython notebook server
