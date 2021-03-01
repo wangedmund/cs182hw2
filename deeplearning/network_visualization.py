@@ -31,7 +31,8 @@ def compute_saliency_maps(X, y, model):
     # to each input image. You first want to compute the loss over the correct   #
     # scores, and then compute the gradients with torch.autograd.gard.           #
     ##############################################################################
-    pass
+    y_pred = model(X).gather(1, y.view(-1, 1)).squeeze()
+    saliency = torch.max(torch.abs(torch.autograd.grad(y_pred, X, torch.ones(y_pred.shape))[0]), 1)[0]
     ##############################################################################
     #                             END OF YOUR CODE                               #
     ##############################################################################
@@ -69,7 +70,11 @@ def make_fooling_image(X, target_y, model):
     # in fewer than 100 iterations of gradient ascent.                           #
     # You can print your progress over iterations to check your algorithm.       #
     ##############################################################################
-    pass
+    while(model(X_fooling).data.max(dim = 1)[1][0] != target_y):
+        y_pred = model(X_fooling)[:,target_y]
+        dX = torch.autograd.grad(y_pred, X_fooling, torch.ones(y_pred.shape))[0]
+        dX = learning_rate * dX / torch.norm(dX)
+        X_fooling = torch.add(X_fooling, dX, alpha = learning_rate)
     ##############################################################################
     #                             END OF YOUR CODE                               #
     ##############################################################################
@@ -98,7 +103,9 @@ def update_class_visulization(model, target_y, l2_reg, learning_rate, img):
     # L2 regularization term!                                              #
     # Be very careful about the signs of elements in your code.            #
     ########################################################################
-    pass
+    score = model(img)[:,target_y] - l2_reg*torch.norm(img)**2
+    dX = torch.autograd.grad(score, img, torch.ones(score.shape))[0] - 2*l2_reg*img
+    img = torch.add(img, dX, alpha = learning_rate)
     ########################################################################
     #                             END OF YOUR CODE                         #
     ########################################################################
