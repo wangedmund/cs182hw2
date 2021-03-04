@@ -105,7 +105,6 @@ def update_class_visulization(model, target_y, l2_reg, learning_rate, img):
     ########################################################################
     score = model(img)[:,target_y] - l2_reg*(torch.square(img.norm()))
     dX = torch.autograd.grad(score, img, torch.ones(score.shape))[0]
-    # img.data = torch.add(img.data, dX, alpha = learning_rate)
     img.data += learning_rate * dX
     ########################################################################
     #                             END OF YOUR CODE                         #
